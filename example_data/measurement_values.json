@@ -1,0 +1,30 @@
+[
+    {
+      "t_measurement": "1716369246.734911",
+      "t_report": "1716369236.734911",
+      "device_id": "device1",
+      "signal_name": "energy import",
+      "value": 100
+    },
+    {
+      "t_measurement": "1716369246.734911",
+      "t_report": "1716369236.734911",
+      "device_id": "device1",
+      "signal_name": "energy export",
+      "value": 10
+    },
+    {
+      "t_measurement": "1716369246.734911",
+      "t_report": "1716369236.734911",
+      "device_id": "device2",
+      "signal_name": "energy import",
+      "value": 150
+    },
+    {
+      "t_measurement": "1716369246.734911",
+      "t_report": "1716369236.734911",
+      "device_id": "device2",
+      "signal_name": "energy export",
+      "value": 0
+    }
+]
