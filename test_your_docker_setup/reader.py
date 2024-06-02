@@ -2,7 +2,7 @@ from confluent_kafka import Consumer, KafkaException
 import json
 
 c = Consumer({
-    'bootstrap.servers': '172.24.0.3:9093',
+    'bootstrap.servers': '192.168.1.72:9093',
     'group.id': 'mygroup',
     'auto.offset.reset': 'earliest'
 })

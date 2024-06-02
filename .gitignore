@@ -1,1 +1,6 @@
 .venv
+.docker-compose.yml
+.test.py
+.main.py
+./exercises/.pytest_cache/
+./exercises/__pycache__/

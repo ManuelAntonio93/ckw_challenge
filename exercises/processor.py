@@ -1,4 +1,4 @@
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import from_json, col, current_timestamp, lit, format_string
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, FloatType, TimestampType
 
@@ -8,19 +8,29 @@ def initialize_spark_session():
         .appName("Kafka Data Processing") \
         .master("local[*]") \
         .getOrCreate()
+        
+def define_log_schema():
+    """Defines and returns the schema used for logging."""
+    return StructType([
+        StructField("timestamp", TimestampType(), True),
+        StructField("level", StringType(), True),
+        StructField("message", StringType(), True)
+    ])
 
 def log_to_parquet(spark, log_parquet_path, level, message):
     """Creates a log entry and writes it to a Parquet file.
     This function dynamically creates a DataFrame for each log message, which includes the current timestamp,
     log level, and message, and then appends it to the specified Parquet file."""
     try:
-        logs_df = spark.createDataFrame([], schema="timestamp timestamp, level string, message string")
-        new_log = logs_df.select(
+        # Create a DataFrame with one row and no columns
+        log_df = spark.range(1).select(
             current_timestamp().alias("timestamp"),
             lit(level).alias("level"),
             lit(message).alias("message")
         )
-        new_log.write.mode("append").parquet(log_parquet_path)
+        
+        # Write the log DataFrame to Parquet in append mode
+        log_df.write.mode("append").parquet(log_parquet_path)
     except Exception as e:
         print(f"Failed to log message: {str(e)}")
 
@@ -35,16 +45,16 @@ def read_and_process_data(spark, data_path, schema):
                     .withColumn("t_report", format_string("%.7f", "t_report")))
         return df_final
     except Exception as e:
-        log_to_parquet(spark, "./datastore/process_logs/", "ERROR", f"Error processing data: {str(e)}")
+        log_to_parquet(spark, "./datastore/process_logs", "ERROR", f"Error processing data: {str(e)}")
         raise
 
 def write_data(df, output_path):
     """Write DataFrame to a Parquet file."""
     try:
         df.write.parquet(output_path, mode='overwrite')
-        log_to_parquet(spark, "./datastore/process_logs/", "INFO", "Data written successfully to Parquet.")
+        log_to_parquet(spark, "./datastore/process_logs", "INFO", "Data written successfully to Parquet.")
     except Exception as e:
-        log_to_parquet(spark, "./datastore/process_logs/", "ERROR", f"Failed to write data: {str(e)}")
+        log_to_parquet(spark, "./datastore/process_logs", "ERROR", f"Failed to write data: {str(e)}")
 
 if __name__ == "__main__":
     
@@ -72,4 +82,14 @@ if __name__ == "__main__":
         df_processed.show()          
         write_data(df_processed, processed_data_path)
     
-    spark.stop()
+    #spark.stop()
+
+
+# Read the processed DataFrame from Parquet
+df_processed_read = spark.read.parquet("./datastore/process_logs")
+
+df_processed_read.show()
+# Define the path for the CSV output
+output_csv_path = "./datastore/process_logs_csv"
+# Write the DataFrame to CSV
+df_processed_read.write.csv(path=output_csv_path, mode='overwrite', header=True)

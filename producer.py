@@ -30,7 +30,7 @@ class MessageProducer:
         self.p.flush()
 
 
-p = Producer({"bootstrap.servers": "172.24.0.3:9093"})
+p = Producer({"bootstrap.servers": "192.168.1.72:9093"})
 
 device1_exp = MessageProducer(p, "device1", "energy export", 50, 70)
 device1_imp = MessageProducer(p, "device1", "energy import", 10, 20)

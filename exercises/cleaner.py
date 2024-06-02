@@ -57,5 +57,3 @@ if __name__ == "__main__":
              .write.parquet("./datastore/cleaned_data", mode="overwrite"))
     
     spark.stop()
-
-

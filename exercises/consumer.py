@@ -31,13 +31,18 @@ def log_to_parquet(spark, log_parquet_path, level, message):
     """Creates a log entry and writes it to a Parquet file.
     This function dynamically creates a DataFrame for each log message, which includes the current timestamp,
     log level, and message, and then appends it to the specified Parquet file."""
-    logs_df = spark.createDataFrame([], schema="timestamp timestamp, level string, message string")
-    new_log = logs_df.select(
-        current_timestamp().alias("timestamp"),
-        lit(level).alias("level"),
-        lit(message).alias("message")
-    )
-    new_log.write.mode("append").parquet(log_parquet_path)
+    try:
+        # Create a DataFrame with one row and no columns
+        log_df = spark.range(1).select(
+            current_timestamp().alias("timestamp"),
+            lit(level).alias("level"),
+            lit(message).alias("message")
+        )
+        
+        # Write the log DataFrame to Parquet in append mode
+        log_df.write.mode("append").parquet(log_parquet_path)
+    except Exception as e:
+        print(f"Failed to log message: {str(e)}")
 
 def read_from_kafka(spark, kafka_bootstrap_servers, kafka_topic):
     """Sets up a readStream from Kafka.
