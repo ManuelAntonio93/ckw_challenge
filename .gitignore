@@ -1,5 +1,5 @@
-.venv
+.venv/
 test.py
 main.py
-./exercises/.pytest_cache/
-./exercises/__pycache__/
+exercises/.pytest_cache/
+**/__pycache__/
