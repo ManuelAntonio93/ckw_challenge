@@ -82,14 +82,4 @@ if __name__ == "__main__":
         df_processed.show()          
         write_data(df_processed, processed_data_path)
     
-    #spark.stop()
-
-
-# Read the processed DataFrame from Parquet
-df_processed_read = spark.read.parquet("./datastore/process_logs")
-
-df_processed_read.show()
-# Define the path for the CSV output
-output_csv_path = "./datastore/process_logs_csv"
-# Write the DataFrame to CSV
-df_processed_read.write.csv(path=output_csv_path, mode='overwrite', header=True)
+    spark.stop()
