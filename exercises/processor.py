@@ -56,6 +56,7 @@ def write_data(df, output_path):
     except Exception as e:
         log_to_parquet(spark, "./datastore/process_logs", "ERROR", f"Failed to write data: {str(e)}")
 
+# Main execution block to ensure this script runs as a standalone program
 if __name__ == "__main__":
     
     spark = initialize_spark_session()

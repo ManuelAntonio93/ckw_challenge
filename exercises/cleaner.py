@@ -39,6 +39,7 @@ def interpolate_and_finalize(df):
     df = df.withColumn("interpolated_value", col("value").isNull())
     return df.withColumn("value", when(col("interpolated_value"), (col("prev_value") + col("next_value")) / 2).otherwise(col("value")))
 
+# Main execution block to ensure this script runs as a standalone program
 if __name__ == "__main__":
     
     spark = initialize_spark()

@@ -10,7 +10,7 @@ def initialize_spark():
 
 def load_data(spark):
     """Load data for processing."""
-    return spark.read.parquet("./datastore/cleaned_data")  # Update the path to your actual data file location
+    return spark.read.parquet("./datastore/cleaned_data")
 
 def validate_data(df):
     """Perform data validation checks on the dataframe."""
@@ -43,11 +43,14 @@ def validate_data(df):
                                             when(~type_and_null_checks, "Data type or Null value error"),
                                             when(~range_checks, "Range check failed"),
                                             when(~consistency_check, "Consistency check failed"))))
+    
+    # Get "t_measurement" and "t_report" with all decimals 
     df = (df.withColumn("t_measurement", format_string("%.7f", "t_measurement"))
            .withColumn("t_report", format_string("%.7f", "t_report")))
     
     return df
 
+# Main execution block to ensure this script runs as a standalone program
 if __name__ == "__main__":
     
     spark = initialize_spark()
@@ -61,7 +64,6 @@ if __name__ == "__main__":
     # Write the validated data to a Parquet file, overwriting any existing file
     df_validated.write.parquet("./datastore/checked_data", mode="overwrite")
     
-    # Display the validated DataFrame
     df_validated.show(truncate=False)
     
     spark.stop()
